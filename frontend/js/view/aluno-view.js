@@ -40,7 +40,6 @@ const AlunoView = {
 
     console.table(alunos);
   },
-},
 
   // Exibe os alunos convertidos para texto JSON.
   exibirJson(textoJson) {
@@ -48,9 +47,9 @@ const AlunoView = {
     console.log(textoJson);
   },
 
-    // Exibe os dados reconstruídos a partir do texto JSON.
-    exibirDadosRecuperados(dados) {
-  console.log("Dados reconstruídos com JSON.parse():");
-  console.table(dados);
-}
+  // Exibe os dados reconstruídos a partir do texto JSON.
+  exibirDadosRecuperados(dados) {
+    console.log("Dados reconstruídos com JSON.parse():");
+    console.table(dados);
+  }
 };
