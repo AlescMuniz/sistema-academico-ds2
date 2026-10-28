@@ -30,17 +30,145 @@
 </head>
 
 <body>
-    <main>
-        <h1>Sistema Acadêmico DS II</h1>
+    <header class="cabecalho">
+        <div class="container">
+            <h1>Sistema Acadêmico DS II</h1>
+            <p>
+                Versão 0.2 — cadastro de alunos com DOM e eventos
+            </p>
+        </div>
+    </header>
 
-        <p>
-            Primeira versão do sistema utilizando MVC e JSON.
-        </p>
+    <main class="container">
 
-        <p>
-            Abra o console do navegador para acompanhar
-            a execução.
-        </p>
+        <!-- Cartão 1: formulário de cadastro. -->
+        <section class="cartao">
+            <h2>Cadastro de aluno</h2>
+
+            <p>
+                Preencha os campos abaixo para cadastrar um aluno.
+            </p>
+
+            <!--
+                novalidate desativa a validação automática do navegador:
+                as regras continuam sendo as do Model.
+                O botão de envio dispara o evento submit.
+            -->
+            <form id="form-aluno" novalidate>
+                <div class="grade-formulario">
+
+                    <div class="campo">
+                        <label for="ra">RA</label>
+                        <input
+                            type="text"
+                            id="ra"
+                            name="ra"
+                            placeholder="Exemplo: 2026001"
+                            required
+                        >
+                    </div>
+
+                    <div class="campo">
+                        <label for="nome">Nome</label>
+                        <input
+                            type="text"
+                            id="nome"
+                            name="nome"
+                            placeholder="Nome completo"
+                            required
+                        >
+                    </div>
+
+                    <div class="campo">
+                        <label for="email">E-mail</label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="aluno@email.com"
+                            required
+                        >
+                    </div>
+
+                    <div class="campo">
+                        <label for="curso">Curso</label>
+                        <input
+                            type="text"
+                            id="curso"
+                            name="curso"
+                            placeholder="Exemplo: DSM"
+                            required
+                        >
+                    </div>
+
+                    <div class="campo">
+                        <label for="turma">Turma</label>
+                        <input
+                            type="text"
+                            id="turma"
+                            name="turma"
+                            placeholder="Exemplo: 2 DSM"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <button type="submit">
+                    Cadastrar aluno
+                </button>
+            </form>
+
+            <!-- Mensagens de sucesso e erro, preenchidas pela View. -->
+            <div
+                id="mensagem"
+                class="mensagem"
+                role="status"
+                aria-live="polite">
+            </div>
+        </section>
+
+        <!-- Cartão 2: lista de alunos e contador. -->
+        <section class="cartao">
+            <div class="titulo-secao">
+                <h2>Alunos cadastrados</h2>
+                <p id="total-alunos">
+                    Total: 0
+                </p>
+            </div>
+
+            <!-- Permite rolagem horizontal da tabela em telas pequenas. -->
+            <div class="tabela-responsiva">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>RA</th>
+                            <th>Nome</th>
+                            <th>E-mail</th>
+                            <th>Curso</th>
+                            <th>Turma</th>
+                            <th>Situação</th>
+                        </tr>
+                    </thead>
+
+                    <!-- Começa vazio: a View cria as linhas dos alunos. -->
+                    <tbody id="corpo-tabela-alunos">
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Cartão 3: representação JSON dos alunos. -->
+        <section class="cartao">
+            <h2>Representação em JSON</h2>
+
+            <p>
+                A lista abaixo é atualizada após cada cadastro.
+            </p>
+
+            <!-- A tag pre preserva a indentação do JSON.stringify(). -->
+            <pre id="saida-json">[]</pre>
+        </section>
     </main>
 </body>
 
