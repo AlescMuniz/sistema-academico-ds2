@@ -18,6 +18,7 @@ const AlunoView = {
     AlunoView.elementos.corpoTabela = document.getElementById("corpo-tabela-alunos");
     AlunoView.elementos.totalAlunos = document.getElementById("total-alunos");
     AlunoView.elementos.saidaJson = document.getElementById("saida-json");
+    AlunoView.elementos.botaoLimpar = document.getElementById("btn-limpar-dados");
   },
 
   // Registra a função do Controller que será executada no envio do formulário.
@@ -31,6 +32,13 @@ const AlunoView = {
     });
   },
 
+  // Registra a função do Controller executada no clique do botão Limpar dados.
+  configurarBotaoLimpar(aoLimpar) {
+    AlunoView.elementos.botaoLimpar.addEventListener("click", function () {
+      aoLimpar();
+    });
+  },
+
   // Apenas coleta os valores; normalização e validação pertencem ao Model.
   lerDados() {
     return {
@@ -40,6 +48,11 @@ const AlunoView = {
       curso: AlunoView.elementos.curso.value,
       turma: AlunoView.elementos.turma.value
     };
+  },
+
+  // Pede confirmação ao usuário antes de remover os dados.
+  confirmarLimpeza() {
+    return confirm("Deseja remover todos os alunos cadastrados?");
   },
 
   exibirSucesso(mensagem) {

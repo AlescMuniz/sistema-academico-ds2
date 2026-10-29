@@ -1,25 +1,26 @@
-// Controller: inicia a aplicação, conecta o formulário ao cadastro,
-// envia os dados ao Model, analisa o resultado e pede a atualização da View.
-// Não valida dados e não acessa o DOM diretamente.
+// Controller: inicia a aplicação e coordena View e Service.
+// Não acessa diretamente o array, o localStorage nem o Model.
 
 const AlunoController = {
   iniciar() {
-    // A View localiza os elementos HTML.
     AlunoView.inicializar();
 
-    // Entrega à View a função que será executada no envio do formulário.
     AlunoView.configurarFormulario(function (dados) {
       AlunoController.cadastrar(dados);
     });
 
-    // Estado inicial: sem alunos, a tabela mostra "Nenhum aluno foi cadastrado".
+    AlunoView.configurarBotaoLimpar(function () {
+      AlunoController.limparDados();
+    });
+
+    // Carrega e apresenta os dados já armazenados:
+    // os alunos voltam para a tabela depois que a página é atualizada.
     AlunoController.atualizarVisualizacao();
   },
 
   cadastrar(dados) {
-    const resultado = AlunoModel.cadastrar(dados);
+    const resultado = AlunoService.cadastrar(dados);
 
-    // Se o Model encontrar algum problema, exibe o erro e encerra.
     if (!resultado.sucesso) {
       AlunoView.exibirErro(resultado.mensagem);
       return;
@@ -32,9 +33,32 @@ const AlunoController = {
     AlunoController.atualizarVisualizacao();
   },
 
-  // Atualiza a tabela e o JSON com a lista atual de alunos.
+  // Coordena a remoção de todos os dados.
+  limparDados() {
+    const alunos = AlunoService.listar();
+
+    // Evita pedir confirmação quando a lista já está vazia.
+    if (alunos.length === 0) {
+      AlunoView.exibirErro("Não existem alunos para remover.");
+      return;
+    }
+
+    const confirmou = AlunoView.confirmarLimpeza();
+
+    if (!confirmou) {
+      return;
+    }
+
+    AlunoService.limpar();
+
+    AlunoView.exibirSucesso("Todos os alunos foram removidos.");
+
+    AlunoController.atualizarVisualizacao();
+  },
+
+  // Recupera os dados e atualiza a interface.
   atualizarVisualizacao() {
-    const alunos = AlunoModel.listar();
+    const alunos = AlunoService.listar();
     AlunoView.exibirLista(alunos);
 
     const textoJson = JSON.stringify(alunos, null, 2);
@@ -42,5 +66,4 @@ const AlunoController = {
   }
 };
 
-// Inicia a aplicação depois que os scripts forem carregados.
 AlunoController.iniciar();

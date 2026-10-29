@@ -11,12 +11,16 @@
     <link rel="stylesheet" href="./css/estilo.css">
 
     <!--
-        Ordem de carregamento: Model, View e Controller.
+        Ordem de carregamento: Model, Service, View e Controller.
         Com defer, os scripts rodam nessa ordem depois que o HTML é lido;
-        o Controller vem por último porque depende dos outros dois.
+        o Controller vem por último porque depende dos outros três.
     -->
     <script
         src="./js/model/aluno-model.js"
+        defer>
+    </script>
+    <script
+        src="./js/service/aluno-service.js"
         defer>
     </script>
     <script
@@ -34,7 +38,7 @@
         <div class="container">
             <h1>Sistema Acadêmico DS II</h1>
             <p>
-                Versão 0.2 — cadastro de alunos com DOM e eventos
+                Versão 0.3 — Persistência local e camada Service
             </p>
         </div>
     </header>
@@ -113,9 +117,18 @@
                     </div>
                 </div>
 
-                <button type="submit">
-                    Cadastrar aluno
-                </button>
+                <div class="acoes-formulario">
+                    <button type="submit">
+                        Cadastrar aluno
+                    </button>
+
+                    <button
+                        type="button"
+                        id="btn-limpar-dados"
+                        class="botao-secundario">
+                        Limpar dados
+                    </button>
+                </div>
             </form>
 
             <!-- Mensagens de sucesso e erro, preenchidas pela View. -->
