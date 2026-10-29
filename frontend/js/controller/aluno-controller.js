@@ -1,37 +1,46 @@
-// Controller: coordena a comunicação entre a View e o Model.
-// Não valida dados e não interage diretamente com o usuário.
+// Controller: inicia a aplicação, conecta o formulário ao cadastro,
+// envia os dados ao Model, analisa o resultado e pede a atualização da View.
+// Não valida dados e não acessa o DOM diretamente.
 
 const AlunoController = {
-  // Executa o fluxo de cadastro, listagem e conversão para JSON.
   iniciar() {
-    let continuar = true;
+    // A View localiza os elementos HTML.
+    AlunoView.inicializar();
 
-    // Repete o cadastro enquanto o usuário quiser continuar.
-    while (continuar) {
-      const dados = AlunoView.lerDados();
-      const resultado = AlunoModel.cadastrar(dados);
+    // Entrega à View a função que será executada no envio do formulário.
+    AlunoView.configurarFormulario(function (dados) {
+      AlunoController.cadastrar(dados);
+    });
 
-      if (resultado.sucesso) {
-        AlunoView.exibirAluno(resultado.aluno);
-      } else {
-        AlunoView.exibirErro(resultado.mensagem);
-      }
+    // Estado inicial: sem alunos, a tabela mostra "Nenhum aluno foi cadastrado".
+    AlunoController.atualizarVisualizacao();
+  },
 
-      continuar = AlunoView.perguntarNovoCadastro();
+  cadastrar(dados) {
+    const resultado = AlunoModel.cadastrar(dados);
+
+    // Se o Model encontrar algum problema, exibe o erro e encerra.
+    if (!resultado.sucesso) {
+      AlunoView.exibirErro(resultado.mensagem);
+      return;
     }
 
-    // Obtém e exibe os alunos cadastrados.
+    AlunoView.exibirSucesso(
+      `Aluno ${resultado.aluno.nome} cadastrado com sucesso.`
+    );
+    AlunoView.limparFormulario();
+    AlunoController.atualizarVisualizacao();
+  },
+
+  // Atualiza a tabela e o JSON com a lista atual de alunos.
+  atualizarVisualizacao() {
     const alunos = AlunoModel.listar();
     AlunoView.exibirLista(alunos);
 
-    // Converte o array de alunos para texto JSON.
     const textoJson = JSON.stringify(alunos, null, 2);
     AlunoView.exibirJson(textoJson);
-
-    // Reconstrói o array a partir do texto JSON.
-    const dadosRecuperados = JSON.parse(textoJson);
-    AlunoView.exibirDadosRecuperados(dadosRecuperados);
   }
 };
 
+// Inicia a aplicação depois que os scripts forem carregados.
 AlunoController.iniciar();

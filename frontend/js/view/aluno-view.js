@@ -1,55 +1,115 @@
-// View: responsável pela interação com o usuário e pela exibição dos resultados.
+// View: localiza elementos HTML, lê o formulário, observa o evento submit,
+// apresenta mensagens, monta a tabela e apresenta o JSON.
 // Não valida dados e não acessa o Model.
 
 const AlunoView = {
-  // Solicita os dados do aluno e retorna um objeto com os valores digitados.
+  // Guarda as referências aos elementos HTML, evitando repetir getElementById.
+  elementos: {},
+
+  // Deve ser executado antes dos demais métodos.
+  inicializar() {
+    AlunoView.elementos.formulario = document.getElementById("form-aluno");
+    AlunoView.elementos.ra = document.getElementById("ra");
+    AlunoView.elementos.nome = document.getElementById("nome");
+    AlunoView.elementos.email = document.getElementById("email");
+    AlunoView.elementos.curso = document.getElementById("curso");
+    AlunoView.elementos.turma = document.getElementById("turma");
+    AlunoView.elementos.mensagem = document.getElementById("mensagem");
+    AlunoView.elementos.corpoTabela = document.getElementById("corpo-tabela-alunos");
+    AlunoView.elementos.totalAlunos = document.getElementById("total-alunos");
+    AlunoView.elementos.saidaJson = document.getElementById("saida-json");
+  },
+
+  // Registra a função do Controller que será executada no envio do formulário.
+  configurarFormulario(aoEnviar) {
+    AlunoView.elementos.formulario.addEventListener("submit", function (evento) {
+      // Impede o comportamento padrão, que recarregaria a página.
+      evento.preventDefault();
+
+      const dados = AlunoView.lerDados();
+      aoEnviar(dados);
+    });
+  },
+
+  // Apenas coleta os valores; normalização e validação pertencem ao Model.
   lerDados() {
     return {
-      ra: prompt("Digite o RA do aluno:"),
-      nome: prompt("Digite o nome do aluno:"),
-      email: prompt("Digite o e-mail do aluno:"),
-      curso: prompt("Digite o curso:"),
-      turma: prompt("Digite a turma:")
+      ra: AlunoView.elementos.ra.value,
+      nome: AlunoView.elementos.nome.value,
+      email: AlunoView.elementos.email.value,
+      curso: AlunoView.elementos.curso.value,
+      turma: AlunoView.elementos.turma.value
     };
   },
 
-  // Exibe a mensagem de sucesso e os dados do aluno cadastrado.
-  exibirAluno(aluno) {
-    console.log("Aluno cadastrado com sucesso.");
-    console.table(aluno);
+  exibirSucesso(mensagem) {
+    AlunoView.elementos.mensagem.textContent = mensagem;
+    AlunoView.elementos.mensagem.className = "mensagem sucesso";
   },
 
-  // Exibe a mensagem de erro recebida.
   exibirErro(mensagem) {
-    console.error("Erro:", mensagem);
+    AlunoView.elementos.mensagem.textContent = mensagem;
+    AlunoView.elementos.mensagem.className = "mensagem erro";
   },
 
-  // Pergunta se o usuário deseja continuar. Retorna true ou false.
-  perguntarNovoCadastro() {
-    return confirm("Deseja cadastrar outro aluno?");
+  // Limpa os campos e devolve o foco ao RA para o próximo cadastro.
+  limparFormulario() {
+    AlunoView.elementos.formulario.reset();
+    AlunoView.elementos.ra.focus();
   },
 
-  // Exibe a quantidade e a lista de alunos cadastrados.
+  // Atualiza o contador e reconstrói as linhas da tabela.
   exibirLista(alunos) {
-    console.log("Quantidade de alunos cadastrados:", alunos.length);
+    const corpoTabela = AlunoView.elementos.corpoTabela;
+
+    // Remove as linhas apresentadas anteriormente.
+    corpoTabela.textContent = "";
+
+    AlunoView.elementos.totalAlunos.textContent = `Total: ${alunos.length}`;
 
     if (alunos.length === 0) {
-      console.log("Nenhum aluno foi cadastrado.");
+      const linha = document.createElement("tr");
+      const celula = document.createElement("td");
+
+      celula.colSpan = 7;
+      celula.textContent = "Nenhum aluno foi cadastrado.";
+
+      linha.appendChild(celula);
+      corpoTabela.appendChild(linha);
+
       return;
     }
 
-    console.table(alunos);
+    alunos.forEach(function (aluno) {
+      const linha = document.createElement("tr");
+
+      // Mesma ordem das colunas do HTML.
+      const valores = [
+        aluno.id,
+        aluno.ra,
+        aluno.nome,
+        aluno.email,
+        aluno.curso,
+        aluno.turma,
+        aluno.ativo ? "Ativo" : "Inativo"
+      ];
+
+      valores.forEach(function (valor) {
+        const celula = document.createElement("td");
+
+        // textContent insere o valor como texto; innerHTML não é usado
+        // com dados fornecidos pelo usuário.
+        celula.textContent = valor;
+
+        linha.appendChild(celula);
+      });
+
+      corpoTabela.appendChild(linha);
+    });
   },
 
-  // Exibe os alunos convertidos para texto JSON.
+  // Apresenta o texto JSON dentro da tag pre.
   exibirJson(textoJson) {
-    console.log("Alunos em formato JSON:");
-    console.log(textoJson);
-  },
-
-  // Exibe os dados reconstruídos a partir do texto JSON.
-  exibirDadosRecuperados(dados) {
-    console.log("Dados reconstruídos com JSON.parse():");
-    console.table(dados);
+    AlunoView.elementos.saidaJson.textContent = textoJson;
   }
 };
