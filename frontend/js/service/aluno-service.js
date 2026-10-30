@@ -1,78 +1,85 @@
-// Service: coordena o Model e a persistência dos dados.
-// Nesta versão a persistência usa localStorage; em uma versão futura
-// este arquivo usará fetch() para se comunicar com a API.
+// Service: comunicação entre o frontend e a API.
+// O Controller não precisa conhecer fetch(), cabeçalhos ou conversão de JSON.
 
 const AlunoService = {
-  // Chave específica para evitar conflito com dados de outras aplicações.
-  CHAVE_STORAGE: "sistema-academico-ds2:alunos",
+  // Endereço base dos endpoints de alunos.
+  URL_API: "http://localhost:3000/api/alunos",
 
-  // Recupera os alunos armazenados.
-  listar() {
-    // Se a chave não existir, getItem() devolve null.
-    const textoJson = localStorage.getItem(
-      AlunoService.CHAVE_STORAGE
-    );
+  // Converte a resposta da API em objeto e trata respostas de erro.
+  async processarResposta(resposta) {
+    let resultado;
 
-    if (textoJson === null) {
-      return [];
-    }
-
-    // JSON.parse() gera erro quando recebe um JSON inválido.
     try {
-      const dados = JSON.parse(textoJson);
-
-      // Confirma se o resultado é realmente um array.
-      if (!Array.isArray(dados)) {
-        return [];
-      }
-
-      return dados;
+      resultado = await resposta.json();
     } catch (erro) {
-      // Se o conteúdo estiver corrompido, remove o valor inválido.
-      localStorage.removeItem(
-        AlunoService.CHAVE_STORAGE
+      // O servidor não devolveu um JSON válido.
+      throw new Error(
+        "O servidor retornou uma resposta inválida."
       );
-
-      return [];
-    }
-  },
-
-  // Converte o array para JSON e salva no navegador.
-  salvar(alunos) {
-    const textoJson = JSON.stringify(alunos);
-
-    localStorage.setItem(
-      AlunoService.CHAVE_STORAGE,
-      textoJson
-    );
-  },
-
-  // Recupera a lista, pede ao Model a validação e a criação,
-  // adiciona o aluno ao array e salva.
-  cadastrar(dados) {
-    const alunos = AlunoService.listar();
-
-    const resultado = AlunoModel.criar(
-      dados,
-      alunos
-    );
-
-    // Se o Model identificar um problema, devolve o resultado ao Controller.
-    if (!resultado.sucesso) {
-      return resultado;
     }
 
-    alunos.push(resultado.aluno);
-
-    AlunoService.salvar(alunos);
+    // resposta.ok é verdadeira para status entre 200 e 299.
+    if (!resposta.ok) {
+      // Usa a mensagem da API; se não existir, uma mensagem genérica.
+      throw new Error(
+        resultado.mensagem ||
+        "Não foi possível concluir a operação."
+      );
+    }
 
     return resultado;
   },
 
-  // Remove toda a lista armazenada.
-  limpar() {
-    localStorage.removeItem(
-      AlunoService.CHAVE_STORAGE
-    );
+  // Executa a requisição e trata problemas de conexão com o backend.
+  async requisitar(opcoes = {}) {
+    let resposta;
+
+    try {
+      // O segundo argumento do fetch() contém método, cabeçalhos e corpo.
+      resposta = await fetch(
+        AlunoService.URL_API,
+        opcoes
+      );
+    } catch (erro) {
+      // Servidor desligado, endereço incorreto, rede ou bloqueio de CORS.
+      throw new Error(
+        "Não foi possível conectar ao servidor."
+      );
+    }
+
+    return AlunoService.processarResposta(resposta);
+  },
+
+  // Solicita a lista de alunos.
+  // GET é o método padrão do fetch(); foi mantido para deixar explícito.
+  async listar() {
+    const resultado = await AlunoService.requisitar({
+      method: "GET",
+
+      // Informa que o cliente espera receber JSON.
+      headers: {
+        "Accept": "application/json"
+      }
+    });
+
+    // A API retorna { total, dados }; o Service devolve somente o array.
+    return resultado.dados;
+  },
+
+  // Envia os dados de um novo aluno para a API.
+  async cadastrar(aluno) {
+    return AlunoService.requisitar({
+      method: "POST",
+
+      headers: {
+        "Accept": "application/json",
+
+        // Informa que o corpo da requisição está em JSON.
+        "Content-Type": "application/json"
+      },
+
+      // Converte o objeto para texto JSON.
+      body: JSON.stringify(aluno)
+    });
   }
 };
