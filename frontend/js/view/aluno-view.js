@@ -31,9 +31,6 @@ const AlunoView = {
     AlunoView.elementos.corpoTabela =
       document.querySelector("#corpo-tabela-alunos");
 
-    AlunoView.elementos.totalAlunos =
-      document.querySelector("#total-alunos");
-
     AlunoView.elementos.saidaJson =
       document.querySelector("#saida-json");
 
@@ -82,10 +79,6 @@ const AlunoView = {
   exibirLista(alunos) {
     // Remove as linhas exibidas anteriormente.
     AlunoView.elementos.corpoTabela.innerHTML = "";
-
-    // Atualiza o contador de alunos.
-    AlunoView.elementos.totalAlunos.textContent =
-      `Total: ${alunos.length}`;
 
     // Sem alunos, cria uma linha informando que a lista está vazia.
     if (alunos.length === 0) {
