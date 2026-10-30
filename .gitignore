@@ -5,4 +5,3 @@ node_modules/
 *.pem
 coverage/
 .DS_Store
-CLAUDE.md
