@@ -1,0 +1,139 @@
+type: collection.insomnia.rest/5.0
+schema_version: "5.1"
+name: Sistema Acadêmico DS II
+meta:
+  id: wrk_7a37295c3c8845679632fe4bd3294c2c
+  created: 1793356113253
+  modified: 1793367870815
+  description: ""
+collection:
+  - name: 01 - Sistema
+    meta:
+      id: fld_a0e0cf94020d49678c17ef8c97dc1161
+      created: 1793356140845
+      modified: 1793356140845
+      sortKey: -1793356140845
+      description: ""
+    children:
+      - url: "{{ _.json.base_url }}/api/health"
+        name: Verificar servidor
+        meta:
+          id: req_83a72fd3abaf43178bb74aeb4ca806b6
+          created: 1793356561807
+          modified: 1793358759437
+          isPrivate: false
+          description: ""
+          sortKey: -1793356561807
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: 02 - Alunos
+    meta:
+      id: fld_ba6ca17f01e54573ab7fd37cb5da4d36
+      created: 1793356155856
+      modified: 1793356155856
+      sortKey: -1793356155856
+      description: ""
+    children:
+      - url: "{{ _.json.base_url }}/api/alunos"
+        name: Listando alunos
+        meta:
+          id: req_b3f61a7642f245759307a4d819da5e77
+          created: 1793356668426
+          modified: 1793358755710
+          isPrivate: false
+          description: ""
+          sortKey: -1793356668426
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.json.base_url }}/api/alunos"
+        name: Cadastrar aluno
+        meta:
+          id: req_e334898eb02346b1aabd4b82bb6b02db
+          created: 1793356700192
+          modified: 1793367517428
+          isPrivate: false
+          description: ""
+          sortKey: -1793356700192
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "ra": "40028922",
+              "nome": "Alex Insomnia da Silva",
+              "email": "alex@insomnia.com",
+              "curso": "PPSI",
+              "turma": "5 SI"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ _.json.base_url }}/api/alunos"
+        name: Cadastrar RA duplicado
+        meta:
+          id: req_e31eec83772545c38ba43f772ccb22f5
+          created: 1793368759867
+          modified: 1793368759867
+          isPrivate: false
+          description: ""
+          sortKey: -1793356684309
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "ra": "40028922",
+              "nome": "Alex Insomnia da Silva",
+              "email": "alex@insomnia.com",
+              "curso": "PPSI",
+              "turma": "5 SI"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_5002d9857136ee2fb930ef5bafcd1008381c75b7
+    created: 1793356113287
+    modified: 1793356113287
+environments:
+  name: Base Environment
+  meta:
+    id: env_5002d9857136ee2fb930ef5bafcd1008381c75b7
+    created: 1793356113280
+    modified: 1793358662981
+    isPrivate: false
+  data:
+    json:
+      base_url: http://localhost:3000
