@@ -1,52 +1,39 @@
 import AlunoModel from "../model/aluno-model.js";
-import {
-  enviarJson,
-  lerCorpoJson
-} from "../utils/http.js";
 
-// Controller: recebe as solicitações encaminhadas pelas rotas
-// e faz a ligação entre a requisição HTTP, o Model e a resposta JSON.
+// Controller: recebe as requisições encaminhadas pelo Router,
+// chama o Model e produz a resposta.
 const AlunoController = {
-  // Executado em GET /api/alunos.
+  // GET /api/alunos
   listar(req, res) {
     const alunos = AlunoModel.listar();
 
-    enviarJson(res, 200, {
+    return res.status(200).json({
       total: alunos.length,
       dados: alunos
     });
   },
 
-  // Executado em POST /api/alunos.
-  // async: a leitura do corpo da requisição é assíncrona.
-  async cadastrar(req, res) {
-    try {
-      // Aguarda a leitura e a conversão do JSON recebido.
-      const dados = await lerCorpoJson(req);
+  // POST /api/alunos
+  cadastrar(req, res) {
+    // express.json() já converteu o JSON recebido; o resultado está em req.body.
+    const dados = req.body;
 
-      const resultado = AlunoModel.cadastrar(dados);
+    const resultado = AlunoModel.cadastrar(dados);
 
-      if (!resultado.sucesso) {
-        enviarJson(res, resultado.status, {
-          sucesso: false,
-          mensagem: resultado.mensagem
-        });
-        return;
-      }
-
-      // 201: um novo recurso foi criado.
-      enviarJson(res, resultado.status, {
-        sucesso: true,
-        mensagem: "Aluno cadastrado com sucesso.",
-        dados: resultado.aluno
-      });
-    } catch (erro) {
-      // Por exemplo, quando o cliente envia um JSON inválido.
-      enviarJson(res, 400, {
+    // O Model encontrou algum problema de validação.
+    if (!resultado.sucesso) {
+      return res.status(resultado.status).json({
         sucesso: false,
-        mensagem: "O corpo da requisição contém um JSON inválido."
+        mensagem: resultado.mensagem
       });
     }
+
+    // 201: o aluno foi criado com sucesso.
+    return res.status(201).json({
+      sucesso: true,
+      mensagem: "Aluno cadastrado com sucesso.",
+      dados: resultado.aluno
+    });
   }
 };
 

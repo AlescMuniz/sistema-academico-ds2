@@ -15,5 +15,9 @@
     "json"
   ],
   "author": "Alex Muniz",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.3.0"
+  }
 }
